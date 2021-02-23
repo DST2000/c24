@@ -65,7 +65,7 @@ class JConfig {
 	public $feed_email = 'none';
 	public $log_path = 'D:\\OPS\\OSPanel\\domains\\1c24\\administrator/logs';
 	public $tmp_path = 'D:\\OPS\\OSPanel\\domains\\1c24/tmp';
-	public $lifetime = 15;
+	public $lifetime = 180;
 	public $session_handler = 'database';
 	public $shared_session = false;
 	public $session_metadata = true;
