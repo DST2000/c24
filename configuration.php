@@ -54,7 +54,7 @@ class JConfig {
 	public $cache_platformprefix = 0;
 	public $MetaDesc = '';
 	public $MetaTitle = true;
-	public $MetaAuthor = true;
+	public $MetaAuthor = false;
 	public $MetaVersion = false;
 	public $robots = '';
 	public $sef = true;
