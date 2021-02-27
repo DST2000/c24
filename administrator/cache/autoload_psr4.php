@@ -108,7 +108,6 @@ return [
 	'Joomla\\Module\\Version\\Administrator\\' => [JPATH_ADMINISTRATOR . '/modules/mod_version/src'],
 	'Joomla\\Module\\Whosonline\\Site\\' => [JPATH_SITE . '/modules/mod_whosonline/src'],
 	'Joomla\\Module\\Wrapper\\Site\\' => [JPATH_SITE . '/modules/mod_wrapper/src'],
-	'Joomla\\Plugin\\Console\\AkeebaBackup\\' => [JPATH_PLUGINS . '/console/akeebabackup/src'],
 	'Joomla\\Plugin\\Content\\ConfirmConsent\\' => [JPATH_PLUGINS . '/content/confirmconsent/src'],
 	'Joomla\\Plugin\\Editors\\CodeMirror\\' => [JPATH_PLUGINS . '/editors/codemirror/src'],
 	'Joomla\\Plugin\\Editors\\TinyMCE\\' => [JPATH_PLUGINS . '/editors/tinymce/src'],
