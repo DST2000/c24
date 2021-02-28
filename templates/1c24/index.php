@@ -43,6 +43,10 @@ $assetColorName  = 'theme.' . $paramsColorName;
 $wa->registerAndUseStyle($assetColorName, $templatePath . '/css/global/' . $paramsColorName . '.css');
 $this->getPreloadManager()->prefetch($wa->getAsset('style', $assetColorName)->getUri(), ['as' => 'style']);
 
+// {DST
+JHtml::_('script', 'bootstrap.bundle.min.js', array('version' => 'auto', 'relative' => true));
+// }DST
+
 // Use a font scheme if set in the template style options
 $paramsFontScheme = $this->params->get('useFontScheme', false);
 
