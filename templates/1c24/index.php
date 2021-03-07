@@ -44,7 +44,6 @@ $wa->registerAndUseStyle($assetColorName, $templatePath . '/css/global/' . $para
 $this->getPreloadManager()->prefetch($wa->getAsset('style', $assetColorName)->getUri(), ['as' => 'style']);
 
 // {DST
-JHtml::stylesheet('style.css', array('version' => 'auto', 'relative' => true));
 JHtml::_('script', 'bootstrap.bundle.min.js', array('version' => 'auto', 'relative' => true));
 // }DST
 
