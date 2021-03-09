@@ -11,3 +11,44 @@
     color: #fff;
     text-align: center;
 }
+
+.sheme1c {
+	text-align: center;
+	background-color: honeydew;
+}
+
+.col-md-4.clg {
+    background: linear-gradient(to right, yellow, honeydew);
+}
+
+.col-md-2.clg {
+    background: linear-gradient(to right, yellow, honeydew);
+}
+
+.cl1c {
+	background-color: yellow;
+}
+
+span.labelplatform {
+    font-size: 3em;
+    background-color: yellow;
+    padding: 0 30px 2px 30px;
+}
+
+.config-header {
+	text-align: left;
+}
+
+.config-detail {
+	text-align: left;	
+}
+
+.config-detail, .label-detail, .number-label, .label-date, .config-date {
+	/*text-align: left ; */
+	display: inline;
+}
+
+.book-author {
+	text-align: left;
+}
+
