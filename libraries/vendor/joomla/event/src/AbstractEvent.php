@@ -2,7 +2,7 @@
 /**
  * Part of the Joomla Framework Event Package
  *
- * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @copyright  Copyright (C) 2005 - 2021 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -132,7 +132,7 @@ abstract class AbstractEvent implements EventInterface, ArrayAccess, Serializabl
 	 *
 	 * @return  void
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 */
 	public function stopPropagation(): void
 	{
@@ -168,7 +168,7 @@ abstract class AbstractEvent implements EventInterface, ArrayAccess, Serializabl
 	 *
 	 * @return  array  The data to be serialized
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 */
 	public function __serialize()
 	{
@@ -200,7 +200,7 @@ abstract class AbstractEvent implements EventInterface, ArrayAccess, Serializabl
 	 *
 	 * @return  void
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 */
 	public function __unserialize(array $data)
 	{

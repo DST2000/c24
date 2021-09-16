@@ -1,91 +1,98 @@
 /**
-* PLEASE DO NOT MODIFY THIS FILE. WORK ON THE ES6 VERSION.
-* OTHERWISE YOUR CHANGES WILL BE REPLACED ON THE NEXT BUILD.
-**/
-
-/**
  * @copyright  (C) 2018 Open Source Matters, Inc. <https://www.joomla.org>
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
-Joomla = window.Joomla || {};
-Joomla.MediaManager = Joomla.MediaManager || {};
-Joomla.MediaManager.Edit = Joomla.MediaManager.Edit || {};
+let activated = false; // Update image
 
-(function () {
-  'use strict'; // Update image
+const rotate = (angle, image) => {
+  // The canvas where we will rotate the image
+  let canvas = document.createElement('canvas'); // Pseudo rectangle calculation
 
-  var rotate = function rotate(angle) {
-    // The image element
-    var image = document.getElementById('image-source'); // The canvas where we will resize the image
+  if (angle >= 0 && angle < 45 || angle >= 135 && angle < 225 || angle >= 315 && angle <= 360) {
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+  } else {
+    // swap
+    canvas.width = image.naturalHeight;
+    canvas.height = image.naturalWidth;
+  }
 
-    var canvas = document.createElement('canvas'); // Pseudo rectangle calculation
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  ctx.rotate(angle * Math.PI / 180);
+  ctx.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2); // The format
 
-    if (angle >= 0 && angle < 45 || angle >= 135 && angle < 225 || angle >= 315 && angle <= 360) {
-      canvas.width = image.width;
-      canvas.height = image.height;
-    } else {
-      // swap
-      canvas.width = image.height;
-      canvas.height = image.width;
-    }
+  const format = Joomla.MediaManager.Edit.original.extension === 'jpg' ? 'jpeg' : 'jpg'; // The quality
 
-    var ctx = canvas.getContext('2d');
-    ctx.translate(canvas.width / 2, canvas.height / 2);
-    ctx.rotate(angle * Math.PI / 180);
-    ctx.drawImage(image, -image.width / 2, -image.height / 2); // The format
+  const quality = document.getElementById('jform_rotate_quality').value; // Creating the data from the canvas
 
-    var format = Joomla.MediaManager.Edit.original.extension === 'jpg' ? 'jpeg' : 'jpg'; // The quality
+  Joomla.MediaManager.Edit.current.contents = canvas.toDataURL(`image/${format}`, quality); // Updating the preview element
 
-    var quality = document.getElementById('jform_rotate_quality').value; // Creating the data from the canvas
+  image.width = canvas.width;
+  image.height = canvas.height;
+  image.src = '';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    image.src = Joomla.MediaManager.Edit.current.contents;
+  })); // Update the angle input box
 
-    Joomla.MediaManager.Edit.current.contents = canvas.toDataURL("image/".concat(format), quality); // Updating the preview element
+  document.getElementById('jform_rotate_a').value = angle; // Notify the app that a change has been made
 
-    var preview = document.getElementById('image-preview');
-    preview.width = canvas.width;
-    preview.height = canvas.height;
-    preview.src = Joomla.MediaManager.Edit.current.contents; // Update the height input box
+  window.dispatchEvent(new Event('mediaManager.history.point'));
+  canvas = null;
+};
 
-    document.getElementById('jform_rotate_a').value = angle; // Notify the app that a change has been made
+const initRotate = image => {
+  if (!activated) {
+    // The number input listener
+    document.getElementById('jform_rotate_a').addEventListener('change', ({
+      target
+    }) => {
+      rotate(parseInt(target.value, 10), image);
+      target.value = 0; // Deselect all buttons
 
-    window.dispatchEvent(new Event('mediaManager.history.point'));
-  };
+      [].slice.call(document.querySelectorAll('#jform_rotate_distinct label')).forEach(element => {
+        element.classList.remove('active');
+        element.classList.remove('focus');
+      });
+    }); // The 90 degree rotate buttons listeners
 
-  var initRotate = function initRotate() {
-    var funct = function funct() {
-      // The number input listener
-      document.getElementById('jform_rotate_a').addEventListener('input', function (_ref) {
-        var target = _ref.target;
-        rotate(parseInt(target.value, 10)); // Deselect all buttons
+    [].slice.call(document.querySelectorAll('#jform_rotate_distinct [type=radio]')).forEach(element => {
+      element.addEventListener('click', ({
+        target
+      }) => {
+        rotate(parseInt(target.value, 10), image); // Deselect all buttons
 
-        var elements = [].slice.call(document.querySelectorAll('#jform_rotate_distinct label'));
-        elements.forEach(function (element) {
-          element.classList.remove('active');
-          element.classList.remove('focus');
-        });
-      }); // The 90 degree rotate buttons listeners
-
-      var elements = [].slice.call(document.querySelectorAll('#jform_rotate_distinct label'));
-      elements.forEach(function (element) {
-        element.addEventListener('click', function (_ref2) {
-          var target = _ref2.target;
-          var inputElement = target.querySelector('input');
-
-          if (inputElement) {
-            rotate(parseInt(inputElement.value, 10));
-          }
+        [].slice.call(document.querySelectorAll('#jform_rotate_distinct label')).forEach(el => {
+          el.classList.remove('active');
+          el.classList.remove('focus');
         });
       });
-    };
+    });
+    activated = true;
+  }
+};
 
-    setTimeout(funct, 1000);
-  }; // Register the Events
-
-
-  Joomla.MediaManager.Edit.rotate = {
-    Activate: function Activate(mediaData) {
-      // Initialize
-      initRotate(mediaData);
+window.addEventListener('media-manager-edit-init', () => {
+  // Register the Events
+  Joomla.MediaManager.Edit.plugins.rotate = {
+    Activate(image) {
+      return new Promise(resolve => {
+        // Initialize
+        initRotate(image);
+        resolve();
+      });
     },
-    Deactivate: function Deactivate() {}
+
+    Deactivate()
+    /* image */
+    {
+      return new Promise(resolve => {
+        resolve();
+      });
+    }
+
   };
-})();
+}, {
+  once: true
+});

@@ -2,7 +2,7 @@
 /**
  * Part of the Joomla Framework Application Package
  *
- * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @copyright  Copyright (C) 2005 - 2021 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -11,7 +11,7 @@ namespace Joomla\Application;
 /**
  * Joomla Framework Application Interface
  *
- * @since  2.0.0-beta
+ * @since  2.0.0
  */
 interface ApplicationInterface
 {
@@ -22,7 +22,7 @@ interface ApplicationInterface
 	 *
 	 * @return  void
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 */
 	public function close($code = 0);
 
@@ -31,7 +31,7 @@ interface ApplicationInterface
 	 *
 	 * @return  void
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 */
 	public function execute();
 }

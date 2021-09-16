@@ -1,8 +1,8 @@
-import { B as BaseComponent, D as Data, E as EventHandler, d as defineJQueryPlugin } from './dom.js?1613876445';
+import { B as BaseComponent, E as EventHandler, d as defineJQueryPlugin } from './dom.js?1629836785';
 
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.0-beta2): button.js
+ * Bootstrap (v5.0.2): button.js
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
@@ -12,13 +12,13 @@ import { B as BaseComponent, D as Data, E as EventHandler, d as defineJQueryPlug
  * ------------------------------------------------------------------------
  */
 
-var NAME = 'button';
-var DATA_KEY = 'bs.button';
-var EVENT_KEY = ".".concat(DATA_KEY);
-var DATA_API_KEY = '.data-api';
-var CLASS_NAME_ACTIVE = 'active';
-var SELECTOR_DATA_TOGGLE = '[data-bs-toggle="button"]';
-var EVENT_CLICK_DATA_API = "click".concat(EVENT_KEY).concat(DATA_API_KEY);
+const NAME = 'button';
+const DATA_KEY = 'bs.button';
+const EVENT_KEY = `.${DATA_KEY}`;
+const DATA_API_KEY = '.data-api';
+const CLASS_NAME_ACTIVE = 'active';
+const SELECTOR_DATA_TOGGLE = '[data-bs-toggle="button"]';
+const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`;
 /**
  * ------------------------------------------------------------------------
  * Class Definition
@@ -27,8 +27,8 @@ var EVENT_CLICK_DATA_API = "click".concat(EVENT_KEY).concat(DATA_API_KEY);
 
 class Button extends BaseComponent {
   // Getters
-  static get DATA_KEY() {
-    return DATA_KEY;
+  static get NAME() {
+    return NAME;
   } // Public
 
 
@@ -40,11 +40,7 @@ class Button extends BaseComponent {
 
   static jQueryInterface(config) {
     return this.each(function () {
-      var data = Data.getData(this, DATA_KEY);
-
-      if (!data) {
-        data = new Button(this);
-      }
+      const data = Button.getOrCreateInstance(this);
 
       if (config === 'toggle') {
         data[config]();
@@ -62,13 +58,8 @@ class Button extends BaseComponent {
 
 EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, event => {
   event.preventDefault();
-  var button = event.target.closest(SELECTOR_DATA_TOGGLE);
-  var data = Data.getData(button, DATA_KEY);
-
-  if (!data) {
-    data = new Button(button);
-  }
-
+  const button = event.target.closest(SELECTOR_DATA_TOGGLE);
+  const data = Button.getOrCreateInstance(button);
   data.toggle();
 });
 /**
@@ -78,14 +69,14 @@ EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, event => {
  * add .Button to jQuery only if jQuery is present
  */
 
-defineJQueryPlugin(NAME, Button);
+defineJQueryPlugin(Button);
 
 window.bootstrap = window.bootstrap || {};
 window.bootstrap.Button = Button;
 
 if (Joomla && Joomla.getOptions) {
   // Get the elements/configurations from the PHP
-  var buttons = Joomla.getOptions('bootstrap.button'); // Initialise the elements
+  const buttons = Joomla.getOptions('bootstrap.button'); // Initialise the elements
 
   if (buttons && buttons.length) {
     buttons.forEach(selector => {

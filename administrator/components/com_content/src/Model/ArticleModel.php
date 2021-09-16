@@ -75,7 +75,7 @@ class ArticleModel extends AdminModel implements WorkflowModelInterface
 	 * The event to trigger before changing featured status one or more items.
 	 *
 	 * @var    string
-	 * @since  4.0
+	 * @since  4.0.0
 	 */
 	protected $event_before_change_featured = null;
 
@@ -83,7 +83,7 @@ class ArticleModel extends AdminModel implements WorkflowModelInterface
 	 * The event to trigger after changing featured status one or more items.
 	 *
 	 * @var    string
-	 * @since  4.0
+	 * @since  4.0.0
 	 */
 	protected $event_after_change_featured = null;
 
@@ -484,7 +484,7 @@ class ArticleModel extends AdminModel implements WorkflowModelInterface
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
-		$user = Factory::getApplication()->getIdentity();
+		$app  = Factory::getApplication();
 
 		// Get the form.
 		$form = $this->loadForm('com_content.article', 'article', array('control' => 'jform', 'load_data' => $loadData));
@@ -494,7 +494,16 @@ class ArticleModel extends AdminModel implements WorkflowModelInterface
 			return false;
 		}
 
-		$id = (int) $this->getState('article.id');
+		// Object uses for checking edit state permission of article
+		$record = new \stdClass;
+
+		// Get ID of the article from input, for frontend, we use a_id while backend uses id
+		$articleIdFromInput = (int) $app->input->getInt('a_id') ?: $app->input->getInt('id', 0);
+
+		// On edit article, we get ID of article from article.id state, but on save, we use data from input
+		$id = (int) $this->getState('article.id', $articleIdFromInput);
+
+		$record->id = $id;
 
 		// For new articles we load the potential state + associations
 		if ($id == 0 && $formField = $form->getField('catid'))
@@ -526,12 +535,36 @@ class ArticleModel extends AdminModel implements WorkflowModelInterface
 			$form->setFieldAttribute('catid', 'refresh-enabled', true);
 			$form->setFieldAttribute('catid', 'refresh-cat-id', $assignedCatids);
 			$form->setFieldAttribute('catid', 'refresh-section', 'article');
+
+			// Store ID of the category uses for edit state permission check
+			$record->catid = $assignedCatids;
+		}
+		else
+		{
+			// Get the category which the article is being added to
+			if (!empty($data['catid']))
+			{
+				$catId = (int) $data['catid'];
+			}
+			else
+			{
+				$catIds  = $form->getValue('catid');
+
+				$catId = is_array($catIds)
+					? (int) reset($catIds)
+					: (int) $catIds;
+
+				if (!$catId)
+				{
+					$catId = (int) $form->getFieldAttribute('catid', 'default', 0);
+				}
+			}
+
+			$record->catid = $catId;
 		}
 
-		// Check for existing article.
 		// Modify the form based on Edit State access controls.
-		if ($id != 0 && (!$user->authorise('core.edit.state', 'com_content.article.' . (int) $id))
-			|| ($id == 0 && !$user->authorise('core.edit.state', 'com_content')))
+		if (!$this->canEditState($record))
 		{
 			// Disable fields for display.
 			$form->setFieldAttribute('featured', 'disabled', 'true');
@@ -551,6 +584,12 @@ class ArticleModel extends AdminModel implements WorkflowModelInterface
 			$form->setFieldAttribute('publish_up', 'filter', 'unset');
 			$form->setFieldAttribute('publish_down', 'filter', 'unset');
 			$form->setFieldAttribute('state', 'filter', 'unset');
+		}
+
+		// Don't allow to change the created_by user if not allowed to access com_users.
+		if (!Factory::getUser()->authorise('core.manage', 'com_users'))
+		{
+			$form->setFieldAttribute('created_by', 'filter', 'unset');
 		}
 
 		return $form;
@@ -585,7 +624,12 @@ class ArticleModel extends AdminModel implements WorkflowModelInterface
 					)
 				);
 				$data->set('catid', $app->input->getInt('catid', (!empty($filters['category_id']) ? $filters['category_id'] : null)));
-				$data->set('language', $app->input->getString('language', (!empty($filters['language']) ? $filters['language'] : null)));
+
+				if ($app->isClient('administrator'))
+				{
+					$data->set('language', $app->input->getString('language', (!empty($filters['language']) ? $filters['language'] : null)));
+				}
+
 				$data->set('access',
 					$app->input->getInt('access', (!empty($filters['access']) ? $filters['access'] : $app->get('access')))
 				);
@@ -618,20 +662,6 @@ class ArticleModel extends AdminModel implements WorkflowModelInterface
 	 */
 	public function validate($form, $data, $group = null)
 	{
-		// Don't allow to change the users if not allowed to access com_users.
-		if (Factory::getApplication()->isClient('administrator') && !Factory::getUser()->authorise('core.manage', 'com_users'))
-		{
-			if (isset($data['created_by']))
-			{
-				unset($data['created_by']);
-			}
-
-			if (isset($data['modified_by']))
-			{
-				unset($data['modified_by']);
-			}
-		}
-
 		if (!Factory::getUser()->authorise('core.admin', 'com_content'))
 		{
 			if (isset($data['rules']))
@@ -775,7 +805,7 @@ class ArticleModel extends AdminModel implements WorkflowModelInterface
 			{
 				if (Factory::getApplication()->get('unicodeslugs') == 1)
 				{
-					$data['alias'] = \JFilterOutput::stringURLUnicodeSlug($data['title']);
+					$data['alias'] = \JFilterOutput::stringUrlUnicodeSlug($data['title']);
 				}
 				else
 				{
@@ -868,7 +898,7 @@ class ArticleModel extends AdminModel implements WorkflowModelInterface
 
 		// Trigger the before change state event.
 		$eventResult = Factory::getApplication()->getDispatcher()->dispatch(
-			'onAfterDisplay',
+			$this->event_before_change_featured,
 			AbstractEvent::create(
 				$this->event_before_change_featured,
 				[
@@ -983,7 +1013,7 @@ class ArticleModel extends AdminModel implements WorkflowModelInterface
 
 		// Trigger the change state event.
 		Factory::getApplication()->getDispatcher()->dispatch(
-			'onAfterDisplay',
+			$this->event_after_change_featured,
 			AbstractEvent::create(
 				$this->event_after_change_featured,
 				[
@@ -1079,7 +1109,7 @@ class ArticleModel extends AdminModel implements WorkflowModelInterface
 	 * Custom clean the cache of com_content and content modules
 	 *
 	 * @param   string   $group     The cache group
-	 * @param   integer  $clientId  The ID of the client
+	 * @param   integer  $clientId  @deprecated   5.0   No longer used.
 	 *
 	 * @return  void
 	 *

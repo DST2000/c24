@@ -38,6 +38,19 @@ class Query extends AbstractQuery
         parent::__construct($connection, $dn, $query, $options);
     }
 
+    /**
+     * @return array
+     */
+    public function __sleep()
+    {
+        throw new \BadMethodCallException('Cannot serialize '.__CLASS__);
+    }
+
+    public function __wakeup()
+    {
+        throw new \BadMethodCallException('Cannot unserialize '.__CLASS__);
+    }
+
     public function __destruct()
     {
         $con = $this->connection->getResource();
@@ -140,7 +153,7 @@ class Query extends AbstractQuery
     }
 
     /**
-     * Returns a LDAP search resource. If this query resulted in multiple searches, only the first
+     * Returns an LDAP search resource. If this query resulted in multiple searches, only the first
      * page will be returned.
      *
      * @return resource

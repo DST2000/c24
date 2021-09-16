@@ -2,7 +2,7 @@
 /**
  * Part of the Joomla Framework Application Package
  *
- * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @copyright  Copyright (C) 2005 - 2021 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -14,7 +14,7 @@ use Joomla\Router\ResolvedRoute;
 /**
  * Resolves a controller for the given route.
  *
- * @since  2.0.0-beta
+ * @since  2.0.0
  */
 class ControllerResolver implements ControllerResolverInterface
 {
@@ -25,7 +25,7 @@ class ControllerResolver implements ControllerResolverInterface
 	 *
 	 * @return  callable
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 * @throws  \InvalidArgumentException
 	 */
 	public function resolve(ResolvedRoute $route): callable
@@ -118,7 +118,7 @@ class ControllerResolver implements ControllerResolverInterface
 	 *
 	 * @return  object  Controller class instance
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 */
 	protected function instantiateController(string $class): object
 	{

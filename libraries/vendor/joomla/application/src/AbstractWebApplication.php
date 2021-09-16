@@ -2,7 +2,7 @@
 /**
  * Part of the Joomla Framework Application Package
  *
- * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @copyright  Copyright (C) 2005 - 2021 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -85,7 +85,7 @@ abstract class AbstractWebApplication extends AbstractApplication implements Web
 	 * Is caching enabled?
 	 *
 	 * @var    boolean
-	 * @since  2.0.0-beta
+	 * @since  2.0.0
 	 */
 	private $cacheable = false;
 
@@ -209,7 +209,7 @@ abstract class AbstractWebApplication extends AbstractApplication implements Web
 	 *
 	 * @return  mixed   A value if the property name is valid, null otherwise.
 	 *
-	 * @since       2.0.0-beta
+	 * @since       2.0.0
 	 * @deprecated  3.0  This is a B/C proxy for deprecated read accesses
 	 */
 	public function __get($name)
@@ -217,9 +217,12 @@ abstract class AbstractWebApplication extends AbstractApplication implements Web
 		switch ($name)
 		{
 			case 'input':
-				@trigger_error(
-					'Accessing the input property of the application is deprecated, use the getInput() method instead.',
-					E_USER_DEPRECATED
+				trigger_deprecation(
+					'joomla/application',
+					'2.0.0',
+					'Accessing the input property of %s is deprecated, use the %s::getInput() method instead.',
+					self::class,
+					self::class
 				);
 
 				return $this->getInput();
@@ -407,7 +410,7 @@ abstract class AbstractWebApplication extends AbstractApplication implements Web
 	 *
 	 * @return  Input
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 */
 	public function getInput(): Input
 	{
@@ -489,12 +492,11 @@ abstract class AbstractWebApplication extends AbstractApplication implements Web
 			// @deprecated 3.0
 			if (\is_bool($status))
 			{
-				@trigger_error(
-					sprintf(
-						'Passing a boolean value for the $status argument in %1$s() is deprecated, an integer should be passed instead.',
-						__METHOD__
-					),
-					E_USER_DEPRECATED
+				trigger_deprecation(
+					'joomla/application',
+					'2.0.0',
+					'Passing a boolean value for the $status argument in %s() is deprecated, an integer should be passed instead.',
+					__METHOD__
 				);
 
 				$status = $status ? 301 : 303;
@@ -740,7 +742,7 @@ abstract class AbstractWebApplication extends AbstractApplication implements Web
 	 *
 	 * @return  ResponseInterface
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 */
 	public function getResponse(): ResponseInterface
 	{
@@ -886,7 +888,7 @@ abstract class AbstractWebApplication extends AbstractApplication implements Web
 	 *
 	 * @return  void
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 */
 	public function setResponse(ResponseInterface $response): void
 	{

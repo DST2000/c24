@@ -1,4 +1,4 @@
-<div class="sheme1c">
+<div class="services">
 	<div class="row g-0">
 		<div class="col-md-10">
 			<span class="labelservice">Обновление типовой конфигурации информационной базы</span>

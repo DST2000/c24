@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * @copyright  (C) 2019 Open Source Matters, Inc. <https://www.joomla.org>
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
@@ -52,7 +50,7 @@ window.customElements.define('joomla-hidden-mail', class extends HTMLElement {
     if (this.getAttribute('text')) {
       let innerStr = this.constructor.b64DecodeUnicode(this.getAttribute('text'));
       innerStr = innerStr.replace('src="images/', `src="${this.base}images/`).replace('src="media/', `src="${this.base}media/`);
-      this.newElement.innerHTML = innerStr;
+      this.newElement.innerHTML = Joomla.sanitizeHtml(innerStr);
     } else {
       this.newElement.innerText = `${window.atob(this.getAttribute('first'))}@${window.atob(this.getAttribute('last'))}`;
     } // Remove the noscript message

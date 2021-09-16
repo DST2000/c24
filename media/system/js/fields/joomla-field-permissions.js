@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * @copyright  (C) 2019 Open Source Matters, Inc. <https://www.joomla.org>
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
@@ -143,7 +141,7 @@ window.customElements.define('joomla-field-permissions', class extends HTMLEleme
           const badgeSpan = target.parentNode.parentNode.nextElementSibling.querySelector('span');
           badgeSpan.removeAttribute('class');
           badgeSpan.setAttribute('class', response.data.class);
-          badgeSpan.innerHTML = response.data.text;
+          badgeSpan.innerHTML = Joomla.sanitizeHtml(response.data.text);
         } // Render messages, if any. There are only message in case of errors.
 
 

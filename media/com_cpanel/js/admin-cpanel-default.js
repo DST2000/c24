@@ -1,48 +1,54 @@
 /**
-* PLEASE DO NOT MODIFY THIS FILE. WORK ON THE ES6 VERSION.
-* OTHERWISE YOUR CHANGES WILL BE REPLACED ON THE NEXT BUILD.
-**/
-
-/**
  * @copyright  (C) 2019 Open Source Matters, Inc. <https://www.joomla.org>
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
-(function (window, document, Joomla) {
-  Joomla.unpublishModule = function (element) {
+
+/**
+ * Debounce
+ * https://gist.github.com/nmsdvid/8807205
+ *
+ * @param { function } callback  The callback function to be executed
+ * @param { int }  time      The time to wait before firing the callback
+ * @param { int }  interval  The interval
+ */
+// eslint-disable-next-line no-param-reassign, no-return-assign
+const debounce = (callback, time = 250, interval) => (...args) => clearTimeout(interval, interval = setTimeout(callback, time, ...args));
+
+((window, document, Joomla) => {
+  Joomla.unpublishModule = element => {
     // Get variables
-    var baseUrl = 'index.php?option=com_modules&task=modules.unpublish&format=json';
-    var id = element.getAttribute('data-module-id');
+    const baseUrl = 'index.php?option=com_modules&task=modules.unpublish&format=json';
+    const id = element.getAttribute('data-module-id');
     Joomla.request({
-      url: "".concat(baseUrl, "&cid=").concat(id),
+      url: `${baseUrl}&cid=${id}`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      onSuccess: function onSuccess() {
-        var wrapper = element.closest('.module-wrapper');
+      onSuccess: () => {
+        const wrapper = element.closest('.module-wrapper');
         wrapper.parentNode.removeChild(wrapper);
         Joomla.renderMessages({
-          message: [Joomla.JText._('COM_CPANEL_UNPUBLISH_MODULE_SUCCESS')]
+          message: [Joomla.Text._('COM_CPANEL_UNPUBLISH_MODULE_SUCCESS')]
         });
       },
-      onError: function onError() {
+      onError: () => {
         Joomla.renderMessages({
-          error: [Joomla.JText._('COM_CPANEL_UNPUBLISH_MODULE_ERROR')]
+          error: [Joomla.Text._('COM_CPANEL_UNPUBLISH_MODULE_ERROR')]
         });
       }
     });
   };
 
-  var onBoot = function onBoot() {
-    var cpanelModules = document.getElementById('content');
+  const onBoot = () => {
+    const cpanelModules = document.getElementById('content');
 
     if (cpanelModules) {
-      var links = [].slice.call(cpanelModules.querySelectorAll('.unpublish-module'));
-      links.forEach(function (link) {
-        link.addEventListener('click', function (_ref) {
-          var target = _ref.target;
-          return Joomla.unpublishModule(target);
-        });
+      const links = [].slice.call(cpanelModules.querySelectorAll('.unpublish-module'));
+      links.forEach(link => {
+        link.addEventListener('click', ({
+          target
+        }) => Joomla.unpublishModule(target));
       });
     } // Cleanup
 
@@ -53,40 +59,49 @@
 
   document.addEventListener('DOMContentLoaded', onBoot); // Masonry layout for cpanel cards
 
-  var MasonryLayout = {
+  const MasonryLayout = {
     $gridBox: null,
+    gridAutoRows: 0,
+    gridRowGap: 10,
+
     // Calculate "grid-row-end" property
-    resizeGridItem: function resizeGridItem($cell, rowHeight, rowGap) {
-      var $content = $cell.querySelector('.card');
+    resizeGridItem($cell, rowHeight, rowGap) {
+      const $content = $cell.querySelector('.card');
 
       if ($content) {
-        var contentHeight = $content.getBoundingClientRect().height + rowGap;
-        var rowSpan = Math.ceil(contentHeight / (rowHeight + rowGap));
-        $cell.style.gridRowEnd = "span ".concat(rowSpan);
+        const contentHeight = $content.getBoundingClientRect().height + rowGap;
+        const rowSpan = Math.ceil(contentHeight / (rowHeight + rowGap));
+        $cell.style.gridRowEnd = `span ${rowSpan}`;
       }
     },
+
     // Check a size of every cell in the grid
-    resizeAllGridItems: function resizeAllGridItems() {
-      var $gridCells = [].slice.call(MasonryLayout.$gridBox.children);
-      var gridStyle = window.getComputedStyle(MasonryLayout.$gridBox);
-      var gridAutoRows = parseInt(gridStyle.getPropertyValue('grid-auto-rows'), 10) || 0;
-      var gridRowGap = parseInt(gridStyle.getPropertyValue('grid-row-gap'), 10) || 10;
-      $gridCells.forEach(function ($cell) {
-        MasonryLayout.resizeGridItem($cell, gridAutoRows, gridRowGap);
+    resizeAllGridItems() {
+      const $gridCells = [].slice.call(this.$gridBox.children);
+      $gridCells.forEach($cell => {
+        this.resizeGridItem($cell, this.gridAutoRows, this.gridRowGap);
       });
     },
-    initialise: function initialise() {
-      MasonryLayout.$gridBox = document.querySelector('#cpanel-modules .card-columns');
-      MasonryLayout.resizeAllGridItems(); // Watch on window resize
 
-      var resizeTimer;
-      window.addEventListener('resize', function () {
-        window.clearTimeout(resizeTimer);
-        resizeTimer = window.setTimeout(MasonryLayout.resizeAllGridItems, 300);
-      });
+    initialise() {
+      this.$gridBox = document.querySelector('#cpanel-modules .card-columns');
+      const gridStyle = window.getComputedStyle(this.$gridBox);
+      this.gridAutoRows = parseInt(gridStyle.getPropertyValue('grid-auto-rows'), 10) || this.gridAutoRows;
+      this.gridRowGap = parseInt(gridStyle.getPropertyValue('grid-row-gap'), 10) || this.gridRowGap;
+      this.resizeAllGridItems(); // Recheck the layout after all content (fonts and images) is loaded.
+
+      window.addEventListener('load', () => this.resizeAllGridItems()); // Recheck the layout when the menu is toggled
+
+      window.addEventListener('joomla:menu-toggle', () => {
+        // 300ms is animation time, need to wait for the animation to end
+        setTimeout(() => this.resizeAllGridItems(), 330);
+      }); // Watch on window resize
+
+      window.addEventListener('resize', debounce(() => this.resizeAllGridItems(), 50));
     }
-  }; // Initialise Masonry layout on full load,
-  // to be sure all images/fonts are loaded, and so cards have a "final" size
 
-  window.addEventListener('load', MasonryLayout.initialise);
+  }; // Initialise Masonry layout at the very beginning, to avoid jumping.
+  // We can do this because the script is deferred.
+
+  MasonryLayout.initialise();
 })(window, document, window.Joomla);

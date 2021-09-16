@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * @package         Joomla.JavaScript
  * @copyright       (C) 2019 Open Source Matters, Inc. <https://www.joomla.org>
@@ -73,7 +71,7 @@ customElements.define('joomla-field-module-order', class extends HTMLElement {
 
       node.value = item[1]; // eslint-disable-next-line prefer-destructuring
 
-      node.innerHTML = item[2];
+      node.innerHTML = Joomla.sanitizeHtml(item[2]);
 
       if (originalPositionName && originalPositionValue === item[1] || !originalPositionName && i === 0) {
         node.setAttribute('selected', 'selected');

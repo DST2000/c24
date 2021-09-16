@@ -1,118 +1,119 @@
 joomla-alert {
+  --jui-alert-min-width: 250px;
+  --jui-alert-padding: .5rem 1.25rem;
+  --jui-alert-margin: 0 0 1rem 0;
+  --jui-alert-border: 1px solid transparent;
+  --jui-alert-border-radius: .25rem;
+  --jui-alert-animation-duration: .5s;
+  --jui-alert-animation-timing-function: ease-in-out;
+  --jui-alert-button-color-dark: #000;
+  --jui-alert-button-color-light: #fff;
+  --jui-alert-success-color: #234423;
+  --jui-alert-success-background-color: #d9e6d9;
+  --jui-alert-success-border-color: #cadcca;
+  --jui-alert-success-link-color: #122212;
+  --jui-alert-info-color: #0c5460;
+  --jui-alert-info-background-color: #d1ecf1;
+  --jui-alert-info-border-color: #bee5eb;
+  --jui-alert-info-link-color: #062c33;
+  --jui-alert-warning-color: #7d5a29;
+  --jui-alert-warning-background-color: #fcefdc;
+  --jui-alert-warning-border-color: #fbe8cd;
+  --jui-alert-warning-link-color: #573e1c;
+  --jui-alert-danger-color: #712b29;
+  --jui-alert-danger-background-color: #f7dddc;
+  --jui-alert-danger-border-color: #f4cfce;
+  --jui-alert-danger-link-color: #4c1d1b;
   display: block;
-  min-width: 250px;
-  padding: 0.5rem 1.25rem;
-  margin-bottom: 1rem;
-  border: 1px solid transparent;
-  border-radius: 0.25rem;
-  opacity: 0;
-  transition: opacity 0.15s linear;
-}
-
-@media screen and (prefers-reduced-motion: reduce) {
-  joomla-alert {
-    transition: none;
-  }
-}
-joomla-alert.joomla-alert--show {
-  display: block;
-  opacity: 1;
-}
-
-joomla-alert .joomla-alert--close, joomla-alert .joomla-alert-button--close {
-  position: relative;
-  top: -0.5rem;
-  right: -1.25rem;
-  padding: 0.2rem 1rem;
-  color: inherit;
+  min-width: var(--jui-alert-min-width, 250px);
+  padding: var(--jui-alert-padding, 0.5rem 1.25rem);
+  margin: var(--jui-alert-margin, 0 0 1rem 0);
+  border: var(--jui-alert-border, 1px solid transparent);
+  border-radius: var(--jui-alert-border-radius, 0.25rem);
+  -webkit-animation-duration: var(--jui-alert-animation-duration, 0.5s);
+  animation-duration: var(--jui-alert-animation-duration, 0.5s);
+  -webkit-animation-timing-function: var(--jui-alert-animation-timing-function, ease-in-out);
+  animation-timing-function: var(--jui-alert-animation-timing-function, ease-in-out);
 }
 
 joomla-alert .joomla-alert--close {
+  position: relative;
+  top: -0.5rem;
+  right: -1.25rem;
+  float: right;
+  padding: 0.2rem 1rem;
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1;
-  text-shadow: 0 1px 0 #fff;
-}
-
-joomla-alert .joomla-alert--close, joomla-alert .joomla-alert-button--close {
-  float: right;
-  color: #000;
+  color: var(--jui-alert-button-color-dark, #000);
+  text-shadow: 0 1px 0 var(--jui-alert-button-color-light, #fff);
   background: transparent;
   border: 0;
   opacity: 0.5;
 }
 
-joomla-alert .joomla-alert--close:hover, joomla-alert .joomla-alert--close:focus, joomla-alert .joomla-alert-button--close:hover, joomla-alert .joomla-alert-button--close:focus {
-  color: #000;
+joomla-alert .joomla-alert--close:hover,
+joomla-alert .joomla-alert--close:focus {
+  color: var(--jui-alert-button-color-dark, #000);
   text-decoration: none;
   cursor: pointer;
   opacity: 0.75;
 }
 
-joomla-alert button.joomla-alert-button--close {
-  padding-top: 0.75rem;
-  font-size: 100%;
-  line-height: 1.15;
-  cursor: pointer;
-  background: transparent;
-  border: 0;
-  -webkit-appearance: none;
-}
-
 joomla-alert[type=success] {
-  color: #234423;
-  background-color: #d9e6d9;
-  border-color: #cadcca;
+  color: var(--jui-alert-success-color, #234423);
+  background-color: var(--jui-alert-success-background-color, #d9e6d9);
+  border-color: var(--jui-alert-success-border-color, #cadcca);
 }
 
 joomla-alert[type=success] hr {
-  border-top-color: #bbd2bb;
+  border-top-color: var(--jui-alert-success-border-color, #cadcca);
 }
 
 joomla-alert[type=success] .alert-link {
-  color: #122212;
+  color: var(--jui-alert-success-link-color, #122212);
 }
 
 joomla-alert[type=info] {
-  color: #0c5460;
-  background-color: #d1ecf1;
-  border-color: #bee5eb;
+  color: var(--jui-alert-info-color, #0c5460);
+  background-color: var(--jui-alert-info-background-color, #d1ecf1);
+  border-color: var(--jui-alert-info-border-color, #bee5eb);
 }
 
 joomla-alert[type=info] hr {
-  border-top-color: #abdde5;
+  border-top-color: var(--jui-alert-info-border-color, #bee5eb);
 }
 
 joomla-alert[type=info] .alert-link {
-  color: #062c33;
+  color: var(--jui-alert-info-link-color, #062c33);
 }
 
 joomla-alert[type=warning] {
-  color: #7d5a29;
-  background-color: #fcefdc;
-  border-color: #fbe8cd;
+  color: var(--jui-alert-warning-color, #7d5a29);
+  background-color: var(--jui-alert-warning-background-color, #fcefdc);
+  border-color: var(--jui-alert-warning-border-color, #fbe8cd);
 }
 
 joomla-alert[type=warning] hr {
-  border-top-color: #f9ddb5;
+  border-top-color: var(--jui-alert-warning-border-color, #fbe8cd);
 }
 
 joomla-alert[type=warning] .alert-link {
-  color: #573e1c;
+  color: var(--jui-alert-warning-link-color, #573e1c);
 }
 
 joomla-alert[type=danger] {
-  color: #712b29;
-  background-color: #f7dddc;
-  border-color: #f4cfce;
+  color: var(--jui-alert-danger-color, #712b29);
+  background-color: var(--jui-alert-danger-background-color, #f7dddc);
+  border-color: var(--jui-alert-danger-border-color, #f4cfce);
 }
 
 joomla-alert[type=danger] hr {
-  border-top-color: #efbbb9;
+  border-top-color: var(--jui-alert-danger-border-color, #f4cfce);
 }
 
 joomla-alert[type=danger] .alert-link {
-  color: #4c1d1b;
+  color: var(--jui-alert-danger-link-color, #4c1d1b);
 }
 
 html[dir=rtl] joomla-alert .joomla-alert--close,
@@ -122,6 +123,38 @@ html[dir=rtl] joomla-alert .joomla-alert-button--close {
   float: left;
 }
 
+@-webkit-keyframes joomla-alert-fade-in {
+  0% {
+    opacity: 0;
+  }
+}
+@keyframes joomla-alert-fade-in {
+  0% {
+    opacity: 0;
+  }
+}
+@-webkit-keyframes joomla-alert-fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes joomla-alert-fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  joomla-alert {
+    -webkit-animation-duration: 1ms !important;
+    animation-duration: 1ms !important;
+  }
+}
 #system-message-container joomla-alert {
   position: relative;
   display: flex;
@@ -129,9 +162,9 @@ html[dir=rtl] joomla-alert .joomla-alert-button--close {
   min-width: 16rem;
   padding: 0;
   margin-bottom: 1rem;
-  color: var(--atum-text-dark);
-  background-color: var(--white);
-  border: 1px solid var(--alert-accent-color, transparent);
+  color: var(--alert-accent-color, var(--template-bg-dark));
+  background-color: var(--alert-bg-color, var(--white));
+  border: 1px solid var(--alert-accent-color, var(--template-bg-dark));
   border-radius: 0.25rem;
   transition: opacity 0.15s linear;
 }
@@ -139,10 +172,10 @@ html[dir=rtl] joomla-alert .joomla-alert-button--close {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-content: center;
   padding: 0.8rem;
-  color: var(--alert-heading-text);
-  background: var(--alert-accent-color, transparent);
+  color: var(--white);
+  background: var(--alert-accent-color, var(--template-bg-dark));
+  align-content: center;
 }
 #system-message-container joomla-alert .alert-heading .message::before,
 #system-message-container joomla-alert .alert-heading .success::before {
@@ -167,7 +200,7 @@ html[dir=rtl] joomla-alert .joomla-alert-button--close {
   width: 1em;
   height: 1em;
   content: "";
-  background-image: url('data:image/svg+xml;utf8,<svg width="1792" height="1792" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1024 1375v-190q0-14-9.5-23.5t-22.5-9.5h-192q-13 0-22.5 9.5t-9.5 23.5v190q0 14 9.5 23.5t22.5 9.5h192q13 0 22.5-9.5t9.5-23.5zm-2-374l18-459q0-12-10-19-13-11-24-11h-220q-11 0-24 11-10 7-10 21l17 457q0 10 10 16.5t24 6.5h185q14 0 23.5-6.5t10.5-16.5zm-14-934l768 1408q35 63-2 126-17 29-46.5 46t-63.5 17h-1536q-34 0-63.5-17t-46.5-46q-37-63-2-126l768-1408q17-31 47-49t65-18 65 18 47 49z"/></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg width="1792" height="1792" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path fill="rgba(255, 255, 255, .95)" d="M1024 1375v-190q0-14-9.5-23.5t-22.5-9.5h-192q-13 0-22.5 9.5t-9.5 23.5v190q0 14 9.5 23.5t22.5 9.5h192q13 0 22.5-9.5t9.5-23.5zm-2-374l18-459q0-12-10-19-13-11-24-11h-220q-11 0-24 11-10 7-10 21l17 457q0 10 10 16.5t24 6.5h185q14 0 23.5-6.5t10.5-16.5zm-14-934l768 1408q35 63-2 126-17 29-46.5 46t-63.5 17h-1536q-34 0-63.5-17t-46.5-46q-37-63-2-126l768-1408q17-31 47-49t65-18 65 18 47 49z"/></svg>');
   background-size: 100%;
 }
 #system-message-container joomla-alert .alert-heading .error::before,
@@ -183,40 +216,38 @@ html[dir=rtl] joomla-alert .joomla-alert-button--close {
   width: 100%;
 }
 #system-message-container joomla-alert .alert-link {
-  color: var(--success, inherit);
+  color: var(--template-link-color);
+  text-decoration: underline;
 }
 #system-message-container joomla-alert[type=success], #system-message-container joomla-alert[type=message] {
-  --alert-accent-color: var(--success);
-  --alert-heading-text: rgba(255, 255, 255, .95);
-  --alert-close-button: var(--success);
-  background-color: var(--white-offset);
+  --alert-accent-color: #457d54;
+  --alert-bg-color: #f2f8f4;
 }
 #system-message-container joomla-alert[type=info], #system-message-container joomla-alert[type=notice] {
-  --alert-accent-color: var(--info);
-  --alert-heading-text: rgba(255, 255, 255, .95);
-  --alert-close-button: var(--info);
-  background-color: var(--white-offset);
+  --alert-accent-color: var(--template-bg-dark-70);
+  --alert-bg-color: var(--white);
 }
 #system-message-container joomla-alert[type=warning] {
-  --alert-accent-color: var(--warning);
-  --alert-heading-text: #000;
-  --alert-close-button: #000;
-  background-color: var(--white-offset);
+  color: #996900;
+  --alert-accent-color: #ffb514;
+  --alert-bg-color: #fffcf4;
+}
+#system-message-container joomla-alert[type=warning] .joomla-alert--close {
+  color: #996900;
 }
 #system-message-container joomla-alert[type=error], #system-message-container joomla-alert[type=danger] {
-  --alert-accent-color: var(--danger);
-  --alert-heading-text: rgba(255, 255, 255, .95);
-  --alert-close-button: var(--danger);
-  background-color: var(--white-offset);
+  --alert-accent-color: #c52827;
+  --alert-bg-color: #fef8f8;
 }
 #system-message-container joomla-alert .joomla-alert--close,
 #system-message-container joomla-alert .joomla-alert-button--close {
   position: absolute;
   top: 0;
   right: 0;
-  padding: 0.2rem 0.8rem;
+  padding: 0.75rem 0.8rem;
   font-size: 2rem;
-  color: var(--alert-close-button);
+  line-height: 1rem;
+  color: var(--alert-accent-color);
   background: none;
   border: 0;
   opacity: 1;
@@ -232,17 +263,15 @@ html[dir=rtl] joomla-alert .joomla-alert-button--close {
 [dir=rtl] #system-message-container joomla-alert .joomla-alert-button--close {
   right: auto;
   left: 0;
-  padding: 0.2rem 0.6rem;
 }
 #system-message-container joomla-alert div {
   font-size: 1rem;
 }
 #system-message-container joomla-alert div .alert-message {
-  padding: 0.3rem 2rem 0.3rem 0.3rem;
+  padding: 0.15rem 0.3rem;
+  -webkit-padding-end: 2rem;
+          padding-inline-end: 2rem;
   margin: 0.5rem;
-}
-[dir=rtl] #system-message-container joomla-alert div .alert-message {
-  padding: 0.3rem 0.3rem 0.3rem 2rem;
 }
 #system-message-container joomla-alert div .alert-message:not(:first-of-type) {
   border-top: 1px solid var(--alert-accent-color);

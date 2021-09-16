@@ -2,7 +2,7 @@
 /**
  * Part of the Joomla Framework Event Package
  *
- * @copyright  Copyright (C) 2005 - 2020 Open Source Matters, Inc. All rights reserved.
+ * @copyright  Copyright (C) 2005 - 2021 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -11,7 +11,7 @@ namespace Joomla\Event;
 /**
  * Interface for event subscribers.
  *
- * @since  2.0.0-beta
+ * @since  2.0.0
  */
 interface SubscriberInterface
 {
@@ -30,7 +30,7 @@ interface SubscriberInterface
 	 *
 	 * @return  array
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 */
 	public static function getSubscribedEvents(): array;
 }

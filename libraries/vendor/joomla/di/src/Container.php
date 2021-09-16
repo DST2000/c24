@@ -35,7 +35,7 @@ class Container implements ContainerInterface
 	 * Holds the resources.
 	 *
 	 * @var    ContainerResource[]
-	 * @since  2.0.0-beta
+	 * @since  2.0.0
 	 */
 	protected $resources = [];
 
@@ -134,13 +134,12 @@ class Container implements ContainerInterface
 	 */
 	public function exists($key)
 	{
-		@trigger_error(
-			sprintf(
-				'%1$s() is deprecated and will be removed in 3.0, use %2$s::has() instead.',
-				__METHOD__,
-				ContainerInterface::class
-			),
-			E_USER_DEPRECATED
+		trigger_deprecation(
+			'joomla/di',
+			'1.5.0',
+			'%s() is deprecated and will be removed in 3.0, use %s::has() instead.',
+			__METHOD__,
+			ContainerInterface::class
 		);
 
 		return $this->has($key);
@@ -187,7 +186,7 @@ class Container implements ContainerInterface
 	 *
 	 * @return  boolean
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 */
 	public function isShared(string $resourceName): bool
 	{
@@ -201,7 +200,7 @@ class Container implements ContainerInterface
 	 *
 	 * @return  boolean
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 */
 	public function isProtected(string $resourceName): bool
 	{
@@ -217,7 +216,7 @@ class Container implements ContainerInterface
 	 *
 	 * @return  boolean
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 * @throws  KeyNotFoundException
 	 */
 	private function hasFlag(string $resourceName, string $method, bool $default = true): bool
@@ -469,11 +468,10 @@ class Container implements ContainerInterface
 			// Check for a typehinted dependency
 			if ($param->hasType())
 			{
-				try
-				{
-					$dependency = $param->getClass();
-				}
-				catch (\ReflectionException $exception)
+				$dependency = $param->getType();
+
+				// Don't support PHP 8 union types
+				if ($dependency instanceof \ReflectionUnionType)
 				{
 					// If this is a nullable parameter, then don't error out
 					if ($param->allowsNull())
@@ -485,19 +483,16 @@ class Container implements ContainerInterface
 
 					throw new DependencyResolutionException(
 						sprintf(
-							'Could not resolve the parameter "$%s" of "%s::%s()": The "%s" class does not exist.',
+							'Could not resolve the parameter "$%s" of "%s::%s()": Union typehints are not supported.',
 							$param->name,
 							$method->class,
-							$method->name,
-							$param->getType()->getName()
-						),
-						0,
-						$exception
+							$method->name
+						)
 					);
 				}
 
 				// Check for a class, if it doesn't have one then it is a scalar type, which we cannot handle if a mandatory argument
-				if ($dependency === null)
+				if ($dependency->isBuiltin())
 				{
 					// If the param is optional, then fall through to the optional param handling later in this method
 					if (!$param->isOptional())
@@ -518,6 +513,28 @@ class Container implements ContainerInterface
 				else
 				{
 					$dependencyClassName = $dependency->getName();
+
+					// Check that class or interface exists
+					if (!interface_exists($dependencyClassName) && !class_exists($dependencyClassName))
+					{
+						// If this is a nullable parameter, then don't error out
+						if ($param->allowsNull())
+						{
+							$methodArgs[] = null;
+
+							continue;
+						}
+
+						throw new DependencyResolutionException(
+							sprintf(
+								'Could not resolve the parameter "$%s" of "%s::%s()": The "%s" class does not exist.',
+								$param->name,
+								$method->class,
+								$method->name,
+								$dependencyClassName
+							)
+						);
+					}
 
 					// If the dependency class name is registered with this container or a parent, use it.
 					if ($this->getResource($dependencyClassName) !== null)
@@ -689,7 +706,7 @@ class Container implements ContainerInterface
 	 *
 	 * @return  ContainerResource|null  The resource if present, or null if instructed to not bail
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 * @throws  KeyNotFoundException
 	 */
 	public function getResource(string $key, bool $bail = false): ?ContainerResource

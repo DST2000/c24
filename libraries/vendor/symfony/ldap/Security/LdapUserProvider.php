@@ -17,7 +17,7 @@ use Symfony\Component\Ldap\Exception\ExceptionInterface;
 use Symfony\Component\Ldap\LdapInterface;
 use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -48,7 +48,7 @@ class LdapUserProvider implements UserProviderInterface, PasswordUpgraderInterfa
         }
 
         if (null === $filter) {
-            $filter = '({uid_key}={username})';
+            $filter = '({uid_key}={user_identifier})';
         }
 
         $this->ldap = $ldap;
@@ -67,36 +67,52 @@ class LdapUserProvider implements UserProviderInterface, PasswordUpgraderInterfa
      */
     public function loadUserByUsername(string $username)
     {
+        trigger_deprecation('symfony/ldap', '5.3', 'Method "%s()" is deprecated, use loadUserByIdentifier() instead.', __METHOD__);
+
+        return $this->loadUserByIdentifier($username);
+    }
+
+    public function loadUserByIdentifier(string $identifier): UserInterface
+    {
         try {
             $this->ldap->bind($this->searchDn, $this->searchPassword);
-            $username = $this->ldap->escape($username, '', LdapInterface::ESCAPE_FILTER);
-            $query = str_replace('{username}', $username, $this->defaultSearch);
+            $identifier = $this->ldap->escape($identifier, '', LdapInterface::ESCAPE_FILTER);
+            $query = str_replace(['{username}', '{user_identifier}'], $identifier, $this->defaultSearch);
             $search = $this->ldap->query($this->baseDn, $query);
         } catch (ConnectionException $e) {
-            throw new UsernameNotFoundException(sprintf('User "%s" not found.', $username), 0, $e);
+            $e = new UserNotFoundException(sprintf('User "%s" not found.', $identifier), 0, $e);
+            $e->setUserIdentifier($identifier);
+
+            throw $e;
         }
 
         $entries = $search->execute();
         $count = \count($entries);
 
         if (!$count) {
-            throw new UsernameNotFoundException(sprintf('User "%s" not found.', $username));
+            $e = new UserNotFoundException(sprintf('User "%s" not found.', $identifier));
+            $e->setUserIdentifier($identifier);
+
+            throw $e;
         }
 
         if ($count > 1) {
-            throw new UsernameNotFoundException('More than one user found.');
+            $e = new UserNotFoundException('More than one user found.');
+            $e->setUserIdentifier($identifier);
+
+            throw $e;
         }
 
         $entry = $entries[0];
 
         try {
             if (null !== $this->uidKey) {
-                $username = $this->getAttributeValue($entry, $this->uidKey);
+                $identifier = $this->getAttributeValue($entry, $this->uidKey);
             }
         } catch (InvalidArgumentException $e) {
         }
 
-        return $this->loadUser($username, $entry);
+        return $this->loadUser($identifier, $entry);
     }
 
     /**
@@ -108,13 +124,15 @@ class LdapUserProvider implements UserProviderInterface, PasswordUpgraderInterfa
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_debug_type($user)));
         }
 
-        return new LdapUser($user->getEntry(), $user->getUsername(), $user->getPassword(), $user->getRoles(), $user->getExtraFields());
+        return new LdapUser($user->getEntry(), $user->getUserIdentifier(), $user->getPassword(), $user->getRoles(), $user->getExtraFields());
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @final
      */
-    public function upgradePassword(UserInterface $user, string $newEncodedPassword): void
+    public function upgradePassword($user, string $newHashedPassword): void
     {
         if (!$user instanceof LdapUser) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_debug_type($user)));
@@ -125,9 +143,9 @@ class LdapUserProvider implements UserProviderInterface, PasswordUpgraderInterfa
         }
 
         try {
-            $user->getEntry()->setAttribute($this->passwordAttribute, [$newEncodedPassword]);
+            $user->getEntry()->setAttribute($this->passwordAttribute, [$newHashedPassword]);
             $this->ldap->getEntryManager()->update($user->getEntry());
-            $user->setPassword($newEncodedPassword);
+            $user->setPassword($newHashedPassword);
         } catch (ExceptionInterface $e) {
             // ignore failed password upgrades
         }
@@ -146,7 +164,7 @@ class LdapUserProvider implements UserProviderInterface, PasswordUpgraderInterfa
      *
      * @return UserInterface
      */
-    protected function loadUser(string $username, Entry $entry)
+    protected function loadUser(string $identifier, Entry $entry)
     {
         $password = null;
         $extraFields = [];
@@ -159,7 +177,7 @@ class LdapUserProvider implements UserProviderInterface, PasswordUpgraderInterfa
             $extraFields[$field] = $this->getAttributeValue($entry, $field);
         }
 
-        return new LdapUser($entry, $username, $password, $this->defaultRoles, $extraFields);
+        return new LdapUser($entry, $identifier, $password, $this->defaultRoles, $extraFields);
     }
 
     private function getAttributeValue(Entry $entry, string $attribute)

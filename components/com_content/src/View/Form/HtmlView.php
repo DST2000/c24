@@ -91,7 +91,7 @@ class HtmlView extends BaseHtmlView
 	 *
 	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
 	 *
-	 * @return  mixed  A string if successful, otherwise an Error object.
+	 * @return  void|boolean
 	 */
 	public function display($tpl = null)
 	{
@@ -164,7 +164,7 @@ class HtmlView extends BaseHtmlView
 		$this->user   = $user;
 
 		// Propose current language as default when creating new article
-		if (empty($this->item->id) && Multilanguage::isEnabled())
+		if (empty($this->item->id) && Multilanguage::isEnabled() && $params->get('enable_category') != 1)
 		{
 			$lang = Factory::getLanguage()->getTag();
 			$this->form->setFieldAttribute('language', 'default', $lang);
