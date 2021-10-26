@@ -11,7 +11,7 @@ class JConfig {
 	public $access = 1;
 	public $debug = false;
 	public $debug_lang = false;
-	public $debug_lang_const = 1;
+	public $debug_lang_const = true;
 	public $dbtype = 'mysqli';
 	public $host = 'localhost';
 	public $user = 'root';
@@ -51,14 +51,14 @@ class JConfig {
 	public $caching = 0;
 	public $cache_handler = 'file';
 	public $cachetime = 15;
-	public $cache_platformprefix = 0;
+	public $cache_platformprefix = false;
 	public $MetaDesc = '';
 	public $MetaTitle = true;
 	public $MetaAuthor = true;
 	public $MetaVersion = false;
 	public $robots = '';
 	public $sef = true;
-	public $sef_rewrite = false;
+	public $sef_rewrite = true;
 	public $sef_suffix = false;
 	public $unicodeslugs = false;
 	public $feed_limit = 10;
@@ -108,4 +108,6 @@ class JConfig {
 	public $asset_id = '1';
 	public $redis_server_auth = '';
 	public $session_redis_server_auth = '';
+	public $behind_loadbalancer = false;
+	public $block_floc = 1;
 }
